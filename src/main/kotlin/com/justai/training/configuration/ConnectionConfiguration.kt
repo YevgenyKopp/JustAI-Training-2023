@@ -11,7 +11,7 @@ import com.justai.jaicf.channel.jaicp.channels.TelephonyChannel
 import com.justai.jaicf.channel.jaicp.logging.JaicpConversationLogger
 import com.justai.jaicf.logging.Slf4jConversationLogger
 import com.justai.training.properties.JaicpProperties
-import com.justai.training.scenario.JaislBuyElephantScenario
+import com.justai.training.scenario.JaicfBuyElephantScenario
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Profile
 @Primary
 class ConnectionConfiguration(
     private var jaicpProperties: JaicpProperties,
-    private val fatherScenario: JaislBuyElephantScenario,
 ) {
     @Profile("dev")
     @Bean
@@ -40,7 +39,7 @@ class ConnectionConfiguration(
     @Bean
     fun getBotEngine() =
         BotEngine(
-            scenario = fatherScenario,
+            scenario = JaicfBuyElephantScenario,
             activators = arrayOf(
                 CailaIntentActivator.Factory(
                     CailaNLUSettings(

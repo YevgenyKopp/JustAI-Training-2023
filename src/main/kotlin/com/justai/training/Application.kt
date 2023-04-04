@@ -5,9 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(scanBasePackages = (["com.justai.training", "com.justai.jaisl"]))
+@SpringBootApplication(scanBasePackages = (["com.justai.training"]))
 @EnableConfigurationProperties
-@ConfigurationPropertiesScan("com.justai.jaisl", "com.justai.training")
+@ConfigurationPropertiesScan("com.justai.training")
 class Application
 
 fun main(args: Array<String>) {
