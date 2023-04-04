@@ -1,0 +1,137 @@
+scenario:
+  states:
+    - name: Hello
+      activators:
+        regexes:
+          - "/start"
+        intents:
+          - "Hello"
+      states:
+        - Price
+        - BuyElephant
+      actions:
+        - reactions:
+            playback:
+              behaviour: RANDOM
+              content:
+                - "Привет, купите слона!"
+                - "Приветствую! Как насчёт того, чтобы слона приобрести?"
+      fallback:
+        - reactions:
+            playback:
+              content:
+                - "Не совсем понял. Вы купите слона?"
+
+    - name: Price
+      modifiers:
+        no-context: true
+      activators:
+        intents:
+          - "Price"
+      actions:
+        - reactions:
+            playback:
+              content:
+                - "Слон стоит 200$. Берёте?"
+
+    - name: BuyElephant
+      activators:
+        entities:
+          - "Agree"
+      states:
+        - GetElephantType
+      actions:
+        - reactions:
+            playback:
+              content:
+                - "Какой именно слон вас интересует?"
+
+    - name: GetElephantType
+      activators:
+        entities:
+          - "ElephantType"
+      actions:
+        - reactions:
+            contexts:
+              - key: "ElephantCode"
+                value: "{{ #ElephantType->code }}"
+        - reactions:
+            contexts: "ElephantGenName: {{ #ElephantType->genitiveName }}"
+#           OR transition: ElephantServiceIntegration
+            transition:
+              type: GO
+              path: "ElephantServiceIntegration"
+      states:
+        - ElephantServiceIntegration
+      fallback:
+        - reactions:
+            playback:
+              content:
+                - "Не совсем понял. Назовите необходимое количество слонов."
+#         OR conditions: "{{ #GetElephantType#ResettableCounter }} < 2"
+          conditions:
+            counters:
+              - type: RESETTABLE
+                value: 2
+                rule: LESS
+        - reactions:
+            transition:
+              path: "/Hangup"
+            playback:
+              content:
+                - "Не смог осознать, сколько слонов вам требуется. Перезвоните, когда определитесь."
+#         OR conditions: "{{ #GetElephantType#ResettableCounter }} >= 2"
+          conditions:
+            counters:
+              - type: RESETTABLE
+                value: 2
+                rule: MORE_OR_EQUALS
+
+    - name: ElephantServiceIntegration
+      settings:
+        type: INTEGRATION
+        integration: "ElephantService"
+      states:
+        - GetElephantNumber
+      actions:
+        - reactions:
+            playback:
+              content:
+                - "Сколько слонов вам нужно?"
+          conditions: "{{ isElephantAvailable }} == true"
+        - reactions:
+            transition:
+              type: CHANGE_STATE
+              path: "/Hello/BuyElephant"
+            playback:
+              content:
+                - "Таких слонов у нас нет. Назовите других."
+          conditions: "{{ isElephantAvailable }} != true"
+
+    - name: GetElephantNumber
+      activators:
+        entities:
+          - "duckling.number"
+      states:
+        - GetCity
+      actions:
+        - reactions:
+            contexts: "ElephantAmount: {{ #duckling.number }}"
+            playback:
+              content:
+                - "И последнее, в какой город нужно доставить?"
+
+    - name: GetCity
+      activators:
+        entities:
+          - "City"
+      actions:
+        - reactions:
+            playback:
+              content:
+                - "Итак, вы заказали {{ ElephantGenName }} в количестве {{ ElephantAmount }} шт в {{ #City -> name }}. Ожидайте доставки"
+            transition: "/Hangup"
+
+    - name: Hangup
+      settings:
+        type: HANGUP

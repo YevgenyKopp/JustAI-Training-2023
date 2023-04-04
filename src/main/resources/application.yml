@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: Just-AI-Training
+  config:
+    import:
+      - "classpath:/scenario.yml"
+  profiles:
+    active: "dev"
+
+server:
+  port: 10020
+
+logging:
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+
+jaicp:
+  url: ${JAICP_URL}
+  accessToken: ${JAICP_TOKEN}
+  caila:
+    cailaUrl: ${CAILA_URL}
+    accessToken: ${CAILA_TOKEN}
+
+bot:
+  speakersSettings:
+    - name: "Татьяна"
+      enabled: true
+      speaker:
+        pseudonym: TTS_TATIANA
+        gender: FEMALE
+        method: SYNTHESIS
+    - name: "Татьяна"
+      enabled: true
+      token: "AimyvoiceTokenHere"
+      speaker:
+        pseudonym: AV_TATIANA
+        gender: FEMALE
+        method: AIMYVOICE
+    - name: "Роман"
+      enabled: true
+      token: "AimyvoiceTokenHere"
+      speaker:
+        pseudonym: AV_ROMAN
+        gender: MALE
+        method: AIMYVOICE
+  defaultSpeaker: TTS_TATIANA
+  integrationErrorThreshold: 2
+
+s3:
+  url: "https://URL"
+  root: "ROOT"
+  endpoint: "https://ENDPOINT"
+  region: "ru-1"
+  username: "USER"
+  password: "PASS"
+
+audio:
+  bucket: "BUCKET"
+
+imputer:
+  url: "URL"
+  token: "TOKEN"
+  speed: 1
+
+aimyvoice:
+  url: "URL"
